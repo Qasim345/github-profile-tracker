@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="bootstrap.min.css" />
+  <meta name="description" content="Github Profile Tracker by Qasim Sarwari in Javascript." />
+  <title>Github Profile Tracker</title>
+  <style type="text/css">
+    * {
+      outline: none;
+      text-decoration: none !important;
+    }
+    .fixed-top {
+      z-index: 5;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+    .fix-card {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      z-index: 6;
+      border-radius: 0 !important;
+      transition: all .4s;
+    }
+    .fix-card.act {
+      left: 0;
+    }
+
+  </style>
+</head>
+<body class="px-3 pb-3">
+  <div class="card col-md-4 m-auto p-3 fixed-top shadow needs-validation">
+    <div class="input-group">
+      <input type="text" class="form-control username" placeholder="Github username ex: Qasim345" required minlength="2">
+      <div class="input-group-append">
+        <span class="input-group-text">
+          <button class="btn btn-primary btn-sm" onclick="fetchData(this)">Fetch</button>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="card col-md-4 shadow-lg m-auto pb-0" style="margin-top:120px !important">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h2>Github Profile</h2>
+      <div class="form-check form-switch">
+        <label for="ch" class="check-title">Dark</label>
+        <input type="checkbox" id="ch" onchange="switchMode(this)" class="form-check-input" />
+      </div>
+    </div>
+    <div class="card-body text-center">
+      <a href="" class="url">
+        <img src="" onload="changeTxt()" class="img-thumbnail rounded-circle shadow my-3" width="130" height="130" />
+      </a>
+      <h3 class="name"></h3>
+      <h4 class="user-name text-muted"></h4>
+      <div class="row">
+        <div class="col-6">
+          <p class="r-link" onclick="showMore(this)" data-href="">
+            Followers <span class="badge bg-info badge-circle followers">0</span>
+          </p>
+        </div>
+        <div class="col">
+          <p class="w-link" onclick="showMore(this)" data-href="">
+            Following <span class="badge bg-primary badge-circle following">0</span>
+          </p>
+        </div>
+      </div>
+      <p class="my-2">
+        Bio: <span class="bio"></span>
+      </p>
+      <p>
+        Blog: <a href="" class="blog"></a>
+      </p>
+      <p>
+        Twitter: <a href="" class="twitter"></a>
+      </p>
+      <p class="m-0 p-0">
+        Location: <span class="location"></span>
+      </p>
+    </div>
+  </div>
+  <!-- user infi -->
+  <div class="card fix-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h3 class="m-0 p-0">Follwers</h3>
+      <button class="btn btn-success btn-sm">Back</button>
+    </div>
+    <div class="card-body" style="overflow-y:auto">
+    </div>
+  </div>
+
+
+  <script>
+    function checkNet(){navigator.onLine?alert("You are online!"):alert("You are offline!")}window.ononline=()=>{checkNet()},window.onoffline=()=>{checkNet()};var b=document.body,$=e=>document.querySelector(e);function switchMode(e){!0==e.checked?(b.setAttribute("data-bs-theme","dark"),$(".check-title").innerHTML="Light"):($(".check-title").innerHTML="Dark",b.removeAttribute("data-bs-theme"))}function fetchData(e){var t=$(".username").value;""==t?$(".fixed-top").classList.add("was-validated"):(e.innerHTML='<div class="spinner-border spinner-border-sm text-light"></div>',$(".btn-primary").disibled=!0,fetch(`https://api.github.com/users/${t}`).then(e=>e.json()).then(e=>{$(".url").href=e.html_url,$(".url img").src=e.avatar_url,$(".name").innerHTML=e.name,$(".user-name").innerHTML=e.login,$(".bio").innerHTML=e.bio,$(".following").innerHTML=e.following,$(".r-link").setAttribute("data-href",`https://api.github.com/users/${t}/followers`),$(".followers").innerHTML=e.followers,$(".w-link").setAttribute("data-href",`https://api.github.com/users/${t}/following`),$(".blog").innerHTML=e.blog,$(".blog").href=e.blog,$(".twitter").innerHTML=e.twitter_username,$(".twitter").href="https://www.twitter.com/"+e.twitter_username,$(".location").innerHTML=e.location}))}function changeTxt(){$(".btn-primary").innerHTML="Fetch",$(".btn-primary").disibled=!1}function showMore(e){$(".fix-card").classList.add("act"),$(".fix-card .card-body").innerHTML="",$(".fix-card .card-header h3").innerHTML=e.innerHTML;var t=Number($(".fix-card .card-header h3 span").innerHTML);fetch(`${e.getAttribute("data-href")}`).then(e=>e.json()).then(e=>{for(var r=0;r<=t;r++)$(".fix-card .card-body").innerHTML+=`
+          <div class="card p-3 my-2">
+          <div class="d-flex align-items-center justify-content-start">
+          <a href="${e[r].html_url}"><img src="${e[r].avatar_url}" class="img-thumbnail rounded-circle me-2" width="70" height="70" /></a>
+          <h4 class="f-name m-0 p-0">${e[r].login}</h4>
+          </div>
+          </div>`})}$(".fix-card .card-header .btn").onclick=()=>$(".fix-card").classList.remove("act");
+  </script>
+</body>
+</html>
